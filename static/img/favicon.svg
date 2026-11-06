@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Centinela Analytics">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14A3A0"/>
+      <stop offset="1" stop-color="#0B2A43"/>
+    </linearGradient>
+  </defs>
+  <path d="M32 3 56 12v19c0 14.5-10 25.6-24 30C18 56.600 8 45.500 8 31V12z" fill="url(#g)"/>
+  <path d="M14 34h10l4-10 7 20 5-14 3 4h9" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="47.500" cy="22" r="3.200" fill="#F26B4E"/>
+</svg>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DengueCheck Pediátrico · Centinela Analytics</title>
+  <meta name="description" content="Estimación del riesgo de complicaciones en dengue pediátrico con regresión logística y redes neuronales artificiales.">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body>
+
+<!-- ===================== ENCABEZADO ===================== -->
+<header class="topbar" id="topbar">
+  <div class="wrap topbar__in">
+    <a class="brand" href="#inicio" aria-label="Centinela Analytics - inicio">
+      <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="" width="38" height="38">
+      <span class="brand__txt"><span class="brand__name"><strong>Centinela</strong> Analytics</span><small>Inteligencia clínica</small></span>
+    </a>
+    <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
+    <nav class="nav" id="nav" aria-label="Principal">
+      <a href="#inicio">Inicio</a>
+      <a href="#predictor">Evaluar paciente</a>
+      <a href="#predictor" class="btn btn--sm btn--coral">Comenzar</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ===================== HERO ===================== -->
+<section class="hero" id="inicio">
+  <div class="hero__bg" aria-hidden="true"></div>
+  <div class="wrap hero__in">
+    <div class="hero__copy">
+      <span class="pill">Dengue pediátrico · Apoyo a la decisión clínica</span>
+      <h1>DengueCheck <em>Pediátrico</em></h1>
+      <p class="lead">Estime en segundos el riesgo de que un niño con dengue desarrolle complicaciones, usando dos modelos de analítica de datos entrenados con 302 pacientes: <strong>regresión logística</strong> y <strong>red neuronal artificial</strong>.</p>
+      <div class="hero__cta">
+        <a href="#predictor" class="btn btn--coral">Evaluar un paciente</a>
+        <a href="#predictor" class="btn btn--ghost">Cómo funciona</a>
+      </div>
+    </div>
+    <div class="hero__stats" id="heroStats">
+      <div class="stat"><span class="stat__n" data-stat="n_pacientes">–</span><span class="stat__l">pacientes analizados</span></div>
+      <div class="stat"><span class="stat__n" data-stat="n_variables">–</span><span class="stat__l">variables clínicas y de laboratorio</span></div>
+      <div class="stat"><span class="stat__n" data-stat="auc_log">–</span><span class="stat__l">AUC regresión logística (val. cruzada)</span></div>
+      <div class="stat"><span class="stat__n" data-stat="auc_rna">–</span><span class="stat__l">AUC red neuronal (val. cruzada)</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PREDICTOR ===================== -->
+<section class="section" id="predictor">
+  <div class="wrap">
+    <header class="section__head">
+      <span class="eyebrow">Herramienta</span>
+      <h2>Evaluación del riesgo de complicaciones</h2>
+      <p>Ingrese los datos del paciente al momento del ingreso. Todos los campos son obligatorios. Puede elegir con qué modelo trabajar y ver siempre la comparación con el otro.</p>
+    </header>
+
+    <div class="predictor">
+      <form id="formulario" class="card form" novalidate autocomplete="off">
+        <div class="form__top">
+          <fieldset class="selector">
+            <legend>Modelo a utilizar</legend>
+            <label class="model-opt">
+              <input type="radio" name="modelo" value="logistica" checked>
+              <span class="model-opt__box">
+                <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 31c9 0 8-22 15-22s6 22 15 22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                <strong>Regresión logística</strong>
+                <small>Interpretable · estadística clásica</small>
+              </span>
+            </label>
+            <label class="model-opt">
+              <input type="radio" name="modelo" value="rna">
+              <span class="model-opt__box">
+                <svg viewBox="0 0 40 40" aria-hidden="true"><g fill="currentColor"><circle cx="7" cy="10" r="3.500"/><circle cx="7" cy="30" r="3.500"/><circle cx="20" cy="6" r="3.500"/><circle cx="20" cy="20" r="3.500"/><circle cx="20" cy="34" r="3.500"/><circle cx="33" cy="20" r="3.500"/></g><g stroke="currentColor" stroke-width="1.200" opacity=".6"><path d="M7 10 20 6M7 10l13 10M7 10l13 24M7 30 20 6M7 30l13-10M7 30l13 4M20 6l13 14M20 20h13M20 34 33 20"/></g></svg>
+                <strong>Red neuronal artificial</strong>
+                <small>Captura relaciones no lineales</small>
+              </span>
+            </label>
+          </fieldset>
+          <div class="examples">
+            <span>Cargar ejemplo:</span>
+            <button type="button" class="chip" data-ejemplo="leve">Caso leve</button>
+            <button type="button" class="chip" data-ejemplo="medio">Caso intermedio</button>
+            <button type="button" class="chip" data-ejemplo="grave">Caso grave</button>
+            <button type="button" class="chip chip--plain" id="btnLimpiar">Limpiar</button>
+          </div>
+        </div>
+
+        <div class="form__group">
+          <h3><span class="num">1</span> Datos del paciente</h3>
+          <div class="grid grid--3">
+            <div class="field">
+              <label for="edad_mayor_6">Grupo de edad</label>
+              <select id="edad_mayor_6" name="edad_mayor_6" required>
+                <option value="" disabled selected>Seleccione…</option>
+                <option value="0">6 años o menos</option>
+                <option value="1">Más de 6 años</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="sexo_masculino">Sexo</label>
+              <select id="sexo_masculino" name="sexo_masculino" required>
+                <option value="" disabled selected>Seleccione…</option>
+                <option value="1">Masculino</option>
+                <option value="0">Femenino</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="duracion_fiebre">Duración de la fiebre</label>
+              <div class="input-u"><input type="number" id="duracion_fiebre" name="duracion_fiebre" min="1" max="20" step="1" inputmode="numeric" placeholder="4" required><span>días</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form__group">
+          <h3><span class="num">2</span> Síntomas y signos <small>(marque los que están presentes)</small></h3>
+          <div class="toggles">
+            <label class="toggle"><input type="checkbox" name="cefalea"><span>Cefalea</span></label>
+            <label class="toggle"><input type="checkbox" name="mialgia"><span>Mialgia</span></label>
+            <label class="toggle"><input type="checkbox" name="dolor_abdominal"><span>Dolor abdominal</span></label>
+            <label class="toggle"><input type="checkbox" name="exantema"><span>Exantema</span></label>
+            <label class="toggle"><input type="checkbox" name="vomito"><span>Vómito</span></label>
+            <label class="toggle"><input type="checkbox" name="disnea"><span>Dificultad respiratoria</span></label>
+            <label class="toggle toggle--alert"><input type="checkbox" name="sangrado"><span>Sangrado</span></label>
+            <label class="toggle toggle--alert"><input type="checkbox" name="hipotension"><span>Hipotensión al ingreso</span></label>
+            <label class="toggle toggle--alert"><input type="checkbox" name="organomegalia"><span>Organomegalia</span></label>
+          </div>
+        </div>
+
+        <div class="form__group">
+          <h3><span class="num">3</span> Laboratorio</h3>
+          <div class="grid grid--4">
+            <div class="field"><label for="hemoglobina">Hemoglobina</label>
+              <div class="input-u"><input type="number" id="hemoglobina" name="hemoglobina" step="0.1" min="4" max="25" inputmode="decimal" placeholder="13.2" required><span>g/dL</span></div></div>
+            <div class="field"><label for="pcv">Hematocrito (PCV)</label>
+              <div class="input-u"><input type="number" id="pcv" name="pcv" step="0.1" min="12" max="70" inputmode="decimal" placeholder="40" required><span>%</span></div></div>
+            <div class="field"><label for="plaquetas">Plaquetas</label>
+              <div class="input-u"><input type="number" id="plaquetas" name="plaquetas" step="1000" min="1000" max="900000" inputmode="numeric" placeholder="90000" required><span>/mm³</span></div></div>
+            <div class="field"><label for="alt">ALT (TGP)</label>
+              <div class="input-u"><input type="number" id="alt" name="alt" step="1" min="1" max="6000" inputmode="numeric" placeholder="26" required><span>U/L</span></div></div>
+            <div class="field"><label for="leuco_min">Leucocitos mínimos</label>
+              <div class="input-u"><input type="number" id="leuco_min" name="leuco_min" step="100" min="300" max="60000" inputmode="numeric" placeholder="3500" required><span>/mm³</span></div></div>
+            <div class="field"><label for="leuco_max">Leucocitos máximos</label>
+              <div class="input-u"><input type="number" id="leuco_max" name="leuco_max" step="100" min="300" max="60000" inputmode="numeric" placeholder="5100" required><span>/mm³</span></div></div>
+            <div class="field"><label for="creatinina">Creatinina</label>
+              <div class="input-u"><input type="number" id="creatinina" name="creatinina" step="0.01" min="0.05" max="15" inputmode="decimal" placeholder="0.5" required><span>mg/dL</span></div></div>
+          </div>
+        </div>
+
+        <div class="form__error" id="errores" role="alert" hidden></div>
+        <div class="form__actions">
+          <button type="submit" class="btn btn--coral btn--lg" id="btnEvaluar">
+            <span class="btn__txt">Evaluar riesgo</span><span class="spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+
+      <aside class="card result" id="resultado" aria-live="polite">
+        <div class="result__empty" id="resultadoVacio">
+          <svg viewBox="0 0 120 80" aria-hidden="true"><path d="M10 70A50 50 0 0 1 110 70" fill="none" stroke="#DCE5EC" stroke-width="10" stroke-linecap="round"/><path d="M10 70A50 50 0 0 1 60 20" fill="none" stroke="#14A3A0" stroke-width="10" stroke-linecap="round" opacity=".35"/></svg>
+          <h3>Aquí aparecerá el resultado</h3>
+          <p>Complete el formulario o cargue un ejemplo para estimar la probabilidad de complicaciones.</p>
+        </div>
+        <div class="result__body" id="resultadoCuerpo" hidden></div>
+      </aside>
+    </div>
+
+    <p class="aviso"><strong>Importante:</strong> esta herramienta es un proyecto académico de analítica de datos. Sus estimaciones son orientativas, se basan en una muestra pequeña de un solo centro y <strong>no reemplazan el juicio clínico</strong> ni el diagnóstico médico.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__in">
+    <div class="brand brand--foot">
+      <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="" width="34" height="34">
+      <span class="brand__txt"><span class="brand__name"><strong>Centinela</strong> Analytics</span><small>DengueCheck Pediátrico</small></span>
+    </div>
+    <p>Proyecto final · Analítica de datos con regresión logística y redes neuronales artificiales.<br>Datos: F1000Research 2022, 11:446 (CC BY 4.0).</p>
+  </div>
+</footer>
+
+<script id="meta-json" type="application/json">{{ meta | tojson }}</script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
